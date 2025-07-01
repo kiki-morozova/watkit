@@ -1,0 +1,1 @@
+simple reverse memory copy function, !!not in place!!.

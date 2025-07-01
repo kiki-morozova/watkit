@@ -1,0 +1,9 @@
+{
+    "name": "reverse-mem-copy",
+    "version": "0.1.0",
+    "main": "src/main.wat",
+    "output": "dist/main.wasm",
+    "description": "reverses a memory block (copy)",
+    "author": "kiki-morozova"
+  }
+  
