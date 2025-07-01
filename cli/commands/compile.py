@@ -15,6 +15,18 @@ def run() -> None:
     src = config["main"]
     dest = config["output"]
     
+    # Check if the main WAT file exists
+    if not os.path.exists(src):
+        print(f"{Fore.RED} ⛌ error: main wat file '{src}' not found.{Style.RESET_ALL}")
+        print(f"check that the file exists and the path in watkit.json is correct!")
+        sys.exit(1)
+    # check if output path is a directory
+    if os.path.isdir(dest):
+        print(f"{Fore.RED} ⛌ error: output path '{dest}' is a directory.{Style.RESET_ALL}")
+        print(f"check that the path in watkit.json is a file and not a directory!")
+        sys.exit(1)
+    
+    # create output directory if it doesn't exist
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     subprocess.run(["wat2wasm", src, "-o", dest], check=True)
     print(f"{Fore.GREEN} ✓ Compiled {src} → {dest}{Style.RESET_ALL}")
