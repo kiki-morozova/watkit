@@ -2,8 +2,8 @@
 a package registry for handwritten WAT modules (w compiled WASM). 
 
 ## why?
-∵ WAT is a very cool low level language, and the first of its kind with such a low barrier to entry (runs in browser!).
-∵ more people writing WAT by hand = more people using optimized WASM = a faster web.
+∵ WAT is a very cool low level language, and the first of its kind with such a low barrier to entry (runs in browser!).  
+∵ more people writing WAT by hand = more people using optimized WASM = a faster web.  
 ∵ less rewriting of "standard" code = more time for people to innovate with WAT.
 
 ## what does watkit include?
