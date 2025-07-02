@@ -1,0 +1,9 @@
+{
+  "name": "math_utils",
+  "version": "0.1.0",
+  "main": "src/main.wat",
+  "output": "dist/main.wasm",
+  "description": "a new web assembly text format module.",
+  "author": "this'll be you :D",
+  "license": "MIT"
+}

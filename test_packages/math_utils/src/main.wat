@@ -1,0 +1,100 @@
+(module ;; some simple math funcs, need i32 and i64 versions since wasm's pretty strict about types
+  (func (export "abs_i32") (param $x i32) (result i32)
+    (if (result i32)
+      (i32.lt_s (local.get $x) (i32.const 0))
+      (then (i32.sub (i32.const 0) (local.get $x)))
+      (else (local.get $x))
+    )
+  )
+
+  (func (export "abs_i64") (param $x i64) (result i64)
+    (if (result i64)
+      (i64.lt_s (local.get $x) (i64.const 0))
+      (then (i64.sub (i64.const 0) (local.get $x)))
+      (else (local.get $x))
+    )
+  )
+
+  (func (export "clamp_i32") (param $x i32) (param $min i32) (param $max i32) (result i32)
+    (local $tmp i32)
+    ;; max(x, min)
+    (local.set $tmp
+      (if (result i32)
+        (i32.lt_s (local.get $x) (local.get $min))
+        (then (local.get $min))
+        (else (local.get $x))
+      )
+    )
+    ;; min(tmp, max)
+    (if (result i32)
+      (i32.gt_s (local.get $tmp) (local.get $max))
+      (then (local.get $max))
+      (else (local.get $tmp))
+    )
+  )
+
+  (func (export "clamp_i64") (param $x i64) (param $min i64) (param $max i64) (result i64)
+    (local $tmp i64)
+
+    ;; max(x, min)
+    (local.set $tmp
+      (if (result i64)
+        (i64.lt_s (local.get $x) (local.get $min))
+        (then (local.get $min))
+        (else (local.get $x))
+      )
+    )
+
+    ;; min(tmp, max)
+    (if (result i64)
+      (i64.gt_s (local.get $tmp) (local.get $max))
+      (then (local.get $max))
+      (else (local.get $tmp))
+    )
+  )
+
+  (func (export "next_power_of_two_i32") 
+    (param $x i32) 
+    (result i32)
+    (local $v i32)
+    ;; uses bit smearing ops fill with 1s till the next power of two, then adds 1
+    ;; on negatives or 0, gives 1
+    (if (result i32)
+      (i32.lt_s (local.get $x) (i32.const 1))
+      (then (i32.const 1)) ;; define fallback for x <= 0
+      (else
+        (local.set $v (i32.sub (local.get $x) (i32.const 1)))
+        (local.set $v (i32.or (local.get $v) (i32.shr_u (local.get $v) (i32.const 1))))
+        (local.set $v (i32.or (local.get $v) (i32.shr_u (local.get $v) (i32.const 2))))
+        (local.set $v (i32.or (local.get $v) (i32.shr_u (local.get $v) (i32.const 4))))
+        (local.set $v (i32.or (local.get $v) (i32.shr_u (local.get $v) (i32.const 8))))
+        (local.set $v (i32.or (local.get $v) (i32.shr_u (local.get $v) (i32.const 16))))
+        (i32.add (local.get $v) (i32.const 1))
+      )
+    )
+  )
+
+  (func (export "next_power_of_two_i64") 
+    (param $x i64) 
+    (result i64)
+    (local $v i64)
+    ;; uses bit smearing ops fill with 1s till the next power of two, then adds 1
+    ;; on negatives or 0, gives 1
+    (if (result i64)
+      (i64.lt_s (local.get $x) (i64.const 1))
+      (then (i64.const 1))
+      (else
+        (local.set $v (i64.sub (local.get $x) (i64.const 1)))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 1))))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 2))))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 4))))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 8))))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 16))))
+        (local.set $v (i64.or (local.get $v) (i64.shr_u (local.get $v) (i64.const 32))))
+        (i64.add (local.get $v) (i64.const 1))
+      )
+    )
+  )
+
+
+)
