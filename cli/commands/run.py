@@ -6,7 +6,7 @@ from colorama import init as colorama_init, Fore, Style
 from command_constants import MODULES_DIR
 from commands.run_func_utils.js_handler import generate_js_runner
 from commands.run_func_utils.rust_handler import generate_rust_stub
-from commands.run_func_utils.import_handler_helpers import parse_imports_from_wat, validate_modules, compile_wat
+from commands.run_func_utils.import_handler_helpers import resolve_recursive_imports, validate_modules, compile_wat
 
 def run(args: argparse.Namespace) -> None:
     """
@@ -38,7 +38,7 @@ def run(args: argparse.Namespace) -> None:
         print(f"{Fore.RED}⛌ source file not found: {wat_path}{Style.RESET_ALL}")
         return
 
-    imports = parse_imports_from_wat(wat_path)
+    imports = resolve_recursive_imports(wat_path, MODULES_DIR)
     if not validate_modules(imports, MODULES_DIR):
         print(f"{Fore.RED}⛌ missing module dependencies. aborting.{Style.RESET_ALL}")
         return
