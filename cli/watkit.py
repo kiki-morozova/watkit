@@ -7,6 +7,7 @@ from commands.init import run as init_command
 from commands.publish import run as publish_command
 from commands.install import run as install_command
 from commands.run import run as run_command
+from commands.uninstall import run as uninstall_command
 
 def main():
     parser = argparse.ArgumentParser(prog="watkit", description="watkit - a wat package manager")
@@ -25,6 +26,9 @@ def main():
     run_parser = subparsers.add_parser("run", help="compile + resolve imports + emit language runner")
     run_parser.add_argument("-l", "--lang", choices=["js", "rust"], default="js", help="output language (default: js)")
 
+    uninstall_parser = subparsers.add_parser("uninstall", help="uninstall a package from the current project")
+    uninstall_parser.add_argument("package", help="name of the package to uninstall")
+
     args = parser.parse_args()
 
     # command routing tree
@@ -38,6 +42,8 @@ def main():
         install_command(args.package)
     elif args.command == "run":
         run_command(args)
+    elif args.command == "uninstall":
+        uninstall_command(args.package)
     else:
         parser.print_help()
         sys.exit(1)
