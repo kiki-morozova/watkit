@@ -1,7 +1,7 @@
 import os
 import shutil
 from colorama import Fore, Style
-from command_constants import MODULES_DIR
+from command_constants import PKG_DIR
 
 def run(package: str) -> None:
     """
@@ -10,7 +10,7 @@ def run(package: str) -> None:
     Args:
         package: The name of the package to uninstall.
     """
-    package_path = os.path.join(MODULES_DIR, package)
+    package_path = os.path.join(PKG_DIR, package)
 
     if not os.path.exists("watkit.json"):
         print(f"{Fore.RED}⛌ not a watkit project (watkit.json not found){Style.RESET_ALL}")
