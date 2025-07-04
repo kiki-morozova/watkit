@@ -53,7 +53,7 @@ def add_compiled_files(tar: tarfile.TarFile) -> None:
                 print(f"✰ bundling compiled dependency: {arcname} ✰")
 
 
-def package_project(config: dict, archive_path: str) -> None:
+def package_project(archive_path: str) -> None:
     os.makedirs("dist", exist_ok=True)
     print(f"✰creating package: {os.path.basename(archive_path)}✰")
 
@@ -79,4 +79,4 @@ def run():
         return
 
     archive_path = build_archive_name(name, version)
-    package_project(config, archive_path)
+    package_project(archive_path)
