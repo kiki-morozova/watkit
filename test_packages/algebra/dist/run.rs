@@ -6,13 +6,20 @@ use wasmtime::*;
             let mut store = Store::new(&engine, ());
             let mut linker = Linker::new(&engine);
 
-            // Load and instantiate math_utils
-                let math_utils_module = Module::from_file(&engine, "watkit_modules/math_utils/dist/main.wasm")?;
-                let math_utils_instance = Instance::new(&mut store, &math_utils_module, &[])?;
-                let math_utils_abs_i32 = math_utils_instance
+            // Load and instantiate pkg/math_utilsv0.1.0
+                let pkg_math_utilsv0_1_0_module = Module::from_file(&engine, "pkg/math_utilsv0.1.0/dist/main.wasm")?;
+                let pkg_math_utilsv0_1_0_instance = Instance::new(&mut store, &pkg_math_utilsv0_1_0_module, &[])?;
+                // Load and instantiate add1
+                let add1_module = Module::from_file(&engine, "dist/add1.wasm")?;
+                let add1_instance = Instance::new(&mut store, &add1_module, &[])?;
+                let pkg_math_utilsv0_1_0_abs_i32 = pkg_math_utilsv0_1_0_instance
                         .get_func(&mut store, "abs_i32")
                         .ok_or("missing function abs_i32")?;
-                    linker.define("math_utils", "abs_i32", Extern::Func(math_utils_abs_i32))?;
+                    linker.define("pkg/math_utilsv0.1.0", "abs_i32", Extern::Func(pkg_math_utilsv0_1_0_abs_i32))?;
+                    let add1_add = add1_instance
+                        .get_func(&mut store, "add")
+                        .ok_or("missing function add")?;
+                    linker.define("add1", "add", Extern::Func(add1_add))?;
                 
             // Load and instantiate main module
             let main_module = Module::from_file(&engine, "dist/main.wasm")?;
