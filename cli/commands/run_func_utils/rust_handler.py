@@ -1,12 +1,17 @@
 from colorama import Fore, Style
 from typing import List, Dict
 import os
+import re
+
+def escape_rust_string(s: str) -> str:
+    """Escape a string for use in Rust."""
+    return s.replace('\\', '\\\\').replace('"', '\\"')
 
 def generate_rust_stub(
     output_path: str,
     wasm_path: str,
     imports: List[Dict[str, str]],
-    module_dir: str  
+    module_paths: Dict[str, str]
 ) -> None:
     """
     Generate a Rust stub that loads the main WASM module and links imported modules.
@@ -14,8 +19,9 @@ def generate_rust_stub(
         output_path: str - path to the output Rust file
         wasm_path: str - path to the main WASM file
         imports: List of dicts with 'module' and 'name' keys
-        module_dir: base directory containing installed modules (e.g., "watkit_modules")
+        module_paths: Dict mapping module names to their WASM file paths (includes bundled deps)
     """
+    # Build a map of module names to their exported functions
     grouped_imports = {}
     for imp in imports:
         grouped_imports.setdefault(imp["module"], set()).add(imp["name"])
@@ -32,18 +38,26 @@ def generate_rust_stub(
 
         """)
 
-        for mod_name, funcs in grouped_imports.items():
-            mod_path = os.path.join(module_dir, mod_name, "dist", "main.wasm").replace("\\", "/")
-            instance_var = f"{mod_name}_instance"
+        # Load all modules in module_paths (including bundled dependencies)
+        for mod_name, mod_path in module_paths.items():
+            # Create a valid Rust identifier for the variable name
+            var_name = re.sub(r'[^a-zA-Z0-9_]', '_', mod_name)
+            instance_var = f"{var_name}_instance"
             f.write(f"""    // Load and instantiate {mod_name}
-                let {mod_name}_module = Module::from_file(&engine, "{mod_path}")?;
-                let {instance_var} = Instance::new(&mut store, &{mod_name}_module, &[])?;
+                let {var_name}_module = Module::from_file(&engine, "{mod_path}")?;
+                let {instance_var} = Instance::new(&mut store, &{var_name}_module, &[])?;
             """)
-            for func in funcs:
-                f.write(f"""    let {mod_name}_{func} = {instance_var}
+
+        # Link functions for modules that have exports
+        for mod_name, funcs in grouped_imports.items():
+            if mod_name in module_paths:  # Only link modules that were loaded
+                var_name = re.sub(r'[^a-zA-Z0-9_]', '_', mod_name)
+                instance_var = f"{var_name}_instance"
+                for func in funcs:
+                    f.write(f"""    let {var_name}_{func} = {instance_var}
                         .get_func(&mut store, "{func}")
                         .ok_or("missing function {func}")?;
-                    linker.define("{mod_name}", "{func}", Extern::Func({mod_name}_{func}))?;
+                    linker.define("{escape_rust_string(mod_name)}", "{func}", Extern::Func({var_name}_{func}))?;
                 """)
 
         f.write(f"""

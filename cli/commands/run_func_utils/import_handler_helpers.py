@@ -49,21 +49,45 @@ def resolve_recursive_imports(wat_path: str, modules_dir: str, seen=None) -> lis
 
     return resolved
 
-def validate_modules(imports: list[dict[str, str]], MODULES_DIR: str) -> bool:
+def discover_bundled_dependencies(package_path: str) -> list[str]:
     """
-    Validate that all modules imported in the main WAT file exist.
+    Discover bundled .wasm dependencies in an installed package.
+    Args:
+        package_path: str - path to the installed package directory
+    Returns:
+        List[str] - list of bundled .wasm file paths relative to package root
+    """
+    bundled_deps = []
+    if os.path.exists(package_path):
+        for root, _, files in os.walk(package_path):
+            for file in files:
+                if file.endswith(".wasm"):
+                    full_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(full_path, package_path)
+                    bundled_deps.append(rel_path)
+    return bundled_deps
+
+def validate_modules(imports: list[dict[str, str]], PKG_DIR: str) -> bool:
+    """
+    Validate that all package modules imported in the main WAT file exist.
     Args:
         imports: List[Dict[str, str]] - list of imports from the main WAT file
-        MODULES_DIR: str - path to the modules directory
+        PKG_DIR: str - path to the modules directory
     Returns:
-        bool - True if all modules exist, False otherwise
+        bool - True if all package modules exist, False otherwise
     """
     success = True
     for imp in imports:
-        mod_path = os.path.join(MODULES_DIR, imp["module"], "dist", "main.wasm")
-        if not os.path.exists(mod_path):
-            print(f"{Fore.RED}⛌ missing module: {imp['module']} at {mod_path}{Style.RESET_ALL}")
-            success = False
+        module_name = imp["module"]
+        # Only validate imports that start with PKG_DIR prefix (package imports)
+        if module_name.startswith(PKG_DIR + "/"):
+            # Strip PKG_DIR prefix to get the actual package name
+            package_name = module_name[len(PKG_DIR + "/"):]
+            mod_path = os.path.join(PKG_DIR, package_name, "dist", "main.wasm")
+            if not os.path.exists(mod_path):
+                print(f"{Fore.RED}⛌ missing module: {imp['module']} at {mod_path}{Style.RESET_ALL}")
+                success = False
+        # Local imports (like "add1") are not validated here - they should be compiled separately
     return success
 
 def compile_wat(src: str, dest: str) -> None:
