@@ -5,6 +5,7 @@ import json
 import os
 from difflib import SequenceMatcher
 from helpers.s3 import get_package_total_downloads
+from helpers.validation import validate_alphanumeric_hyphen_underscore
 
 router = APIRouter()
 
@@ -24,6 +25,10 @@ async def search_packages(q: str = Query(...), by: str = Query("name")):
     """
     Search for packages in the remote s3 registry.
     """
+    validate_alphanumeric_hyphen_underscore(q, "query")
+    if by not in ["name", "author"]:
+        raise HTTPException(status_code=400, detail="by parameter must be either 'name' or 'author'")
+    
     try:
         obj = s3.get_object(Bucket=BUCKET, Key=INDEX_KEY)
         index_data = json.loads(obj["Body"].read())

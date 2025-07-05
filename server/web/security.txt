@@ -1,0 +1,4 @@
+hey! if you're reading this, you're probably at least vaguely security minded, in which case, welcome! 
+thanks for being interested in watkit! if there's any security issues with the website, please let the maintainers know and we'll work with you to fix it. 
+obviously, please don't exploit the vuln or make disguised malicious packages. thanks <3!
+the security contact is kikimora [AT] mit [DOT] edu!

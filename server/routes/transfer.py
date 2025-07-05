@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Form, HTTPException
 import os
 
 from helpers.auth import fetch_github_username_from_cookie
+from helpers.validation import validate_package_name, validate_username
 
 router = APIRouter()
 REGISTRY_DIR = "registry"
@@ -12,6 +13,9 @@ async def transfer_package_ownership(
     name: str,
     new_owner: str = Form(...)
 ):
+    validate_package_name(name)
+    validate_username(new_owner)
+    
     username = fetch_github_username_from_cookie(request)
     package_root = os.path.join(REGISTRY_DIR, name)
     owner_file = os.path.join(package_root, "OWNER")

@@ -10,6 +10,7 @@ import re
 
 from helpers.auth import fetch_github_username_from_cookie
 from helpers.file_validation_helpers import safe_extract_tar
+from helpers.validation import validate_package_name, validate_version
 from helpers.s3 import (
     s3_upload,
     s3_exists,
@@ -28,30 +29,35 @@ async def publish_package(
     version: str = Form(...),
     watpkg_file: UploadFile = File(...)
 ):
-    if len(name) > 30:
-        raise HTTPException(status_code=400, detail="Package name must be less than 30 characters")
-
-    if not re.match(r'^[a-zA-Z0-9_-]+$', name):
-        raise HTTPException(status_code=400, detail="Package name can only contain alphanumeric characters, hyphens, and underscores")
-    
-    if len(version) > 20:
-        raise HTTPException(status_code=400, detail="Version must be less than 20 characters") 
-
-    if not re.match(r'^[a-zA-Z0-9.]+$', version):
-        raise HTTPException(status_code=400, detail="Version can only contain alphanumeric characters and dots")
+    validate_package_name(name)
+    validate_version(version)
 
     if not watpkg_file.filename.endswith(".watpkg"):
-        raise HTTPException(status_code=400, detail="Only .watpkg files are allowed")
+        raise HTTPException(status_code=400, detail="only .watpkg files are allowed")
 
     username = fetch_github_username_from_cookie(request)
+    
+    authors_key = "AUTHORS.txt"
+    try:
+        if s3_exists(authors_key):
+            authors_content = s3_read_text(authors_key)
+            authors_list = [author.strip() for author in authors_content.split('\n') if author.strip()]
+        else:
+            authors_list = []
+        
+        if username not in authors_list:
+            authors_list.append(username)
+            authors_list.sort()
+            s3_write_text(authors_key, '\n'.join(authors_list))
+    except Exception as e:
+        print(f"Warning: Failed to update AUTHORS.txt: {e}")
+    
     package_prefix = f"{name}/"
     version_prefix = f"{package_prefix}{version}/"
 
-    # Disallow overwriting
     if s3_exists(f"{version_prefix}watkit.json"):
         raise HTTPException(status_code=409, detail="This version already exists")
 
-    # Determine owner
     owner_key = f"{package_prefix}OWNER"
     if s3_exists(owner_key):
         owner = s3_read_text(owner_key).strip()
@@ -104,12 +110,10 @@ async def publish_package(
         s3_upload(pkg_path, f"{version_prefix}{watpkg_file.filename}")
         s3_upload(temp_manifest_path, f"{version_prefix}watkit.json")
 
-        # Initialize download count to 0
         s3_write_text(f"downloads/{name}/{version}/count.txt", "0")
 
         s3_write_text(f"{package_prefix}LATEST", version)
 
-        # UPDATE SEARCH INDEX HERE
         index_key = "search_index.json"
         try:
             if s3_exists(index_key):

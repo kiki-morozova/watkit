@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse, JSONResponse
 import os
 import threading
 from helpers.s3 import increment_package_download_count, get_package_download_count, s3_list_objects, s3_read_text, s3_write_text, s3_exists
+from helpers.validation import validate_package_name, validate_version
 from dotenv import load_dotenv
 
 router = APIRouter()
@@ -47,6 +48,9 @@ load_total_downloads()
 
 @router.get("/package/{name}/{version}/manifest")
 async def get_manifest(name: str, version: str):
+    validate_package_name(name)
+    validate_version(version)
+    
     try:
         s3_url = f"http://{BUCKET}.s3-website-us-east-1.amazonaws.com/{name}/{version}/watkit.json"
         import requests
@@ -61,6 +65,9 @@ async def get_manifest(name: str, version: str):
 
 @router.get("/package/{name}/{version}/archive")
 async def get_archive(name: str, version: str):
+    validate_package_name(name)
+    validate_version(version)
+    
     archive_name = f"{name}.watpkg"
     archive_path = os.path.join(BUCKET, name, version, archive_name)
     if not os.path.exists(archive_path):
@@ -79,6 +86,9 @@ async def track_download(name: str, version: str):
     """
     Track a package download (called by CLI install command)
     """
+    validate_package_name(name)
+    validate_version(version)
+    
     download_count = increment_package_download_count(name, version)
     # Also increment global counter
     total_downloads = increment_download_counter()
@@ -97,5 +107,8 @@ async def get_package_download_count_endpoint(name: str, version: str):
     """
     Get the download count for a specific package version
     """
+    validate_package_name(name)
+    validate_version(version)
+    
     count = get_package_download_count(name, version)
     return JSONResponse({"downloads": count})
