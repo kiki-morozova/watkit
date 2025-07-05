@@ -6,6 +6,7 @@ import tempfile
 import tarfile
 import json
 import uuid
+import re
 
 from helpers.auth import fetch_github_username_from_cookie
 from helpers.file_validation_helpers import safe_extract_tar
@@ -27,6 +28,12 @@ async def publish_package(
     version: str = Form(...),
     watpkg_file: UploadFile = File(...)
 ):
+    if not re.match(r'^[a-zA-Z0-9_-]+$', name):
+        raise HTTPException(status_code=400, detail="Package name can only contain alphanumeric characters, hyphens, and underscores")
+    
+    if not re.match(r'^[a-zA-Z0-9_-]+$', version):
+        raise HTTPException(status_code=400, detail="Version can only contain alphanumeric characters, hyphens, and underscores")
+
     if not watpkg_file.filename.endswith(".watpkg"):
         raise HTTPException(status_code=400, detail="Only .watpkg files are allowed")
 
