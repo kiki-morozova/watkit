@@ -96,6 +96,14 @@ def run(name_with_version: str, seen=None) -> None:
 
         print(f"{Fore.GREEN}✓ installed {name}v{version} → {main_wasm_path}{Style.RESET_ALL}\n")
 
+        # Track successful download
+        try:
+            # Use localhost server for tracking (since CLI downloads from S3)
+            track_url = "http://localhost:8000/track-download"
+            requests.post(track_url, params={"name": name, "version": version})
+        except Exception as e:
+            print(f"{Fore.YELLOW}Warning: Could not track download: {e}{Style.RESET_ALL}")
+
     except Exception as e:
         print(f"{Fore.RED}⛌ install failed: {e}{Style.RESET_ALL}")
         shutil.rmtree(os.path.join(PKG_DIR, f"{name}v{version}"), ignore_errors=True)

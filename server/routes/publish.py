@@ -14,7 +14,7 @@ from helpers.s3 import (
     s3_exists,
     s3_read_text,
     s3_write_text,
-    s3_list_objects,
+    s3_list_objects
 )
 
 router = APIRouter()
@@ -90,6 +90,9 @@ async def publish_package(
 
         s3_upload(pkg_path, f"{version_prefix}{watpkg_file.filename}")
         s3_upload(temp_manifest_path, f"{version_prefix}watkit.json")
+
+        # Initialize download count to 0
+        s3_write_text(f"downloads/{name}/{version}/count.txt", "0")
 
         s3_write_text(f"{package_prefix}LATEST", version)
 
