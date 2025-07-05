@@ -13,6 +13,29 @@ everything you'd expect from a package registry! that means: a cli, a website to
 ✰ auto-generates js and rust runners for entire WAT projects, including resolving recursive dependency trees handling multiple wasm package versions  
 ✰ handles remote and local imports into a main wasm file enabling glued-together multi-file publishable WAT modules that stay together when imported into another project
 
+## install guide
+install is incredibly simple: make sure you have python3.7 or greater on your system and these packages (for unix): 
+```python
+os
+sys
+subprocess
+shutil
+platform
+from pathlib import Path
+```
+for windows, you'll also need winreg.  
+then, clone this repo and run (from the watkit root directory, with the files made executable): 
+```bash 
+# for unix
+python3 main.py
+```  
+
+```powershell 
+# for windows
+python3 main_windows.py
+```
+follow the install instructions, and choose the cli-only install for quickstart. serverside code is provided in this repo to make this project open-source and build trust with the community, but is not needed for most use cases.
+
 ## commands overview
 ### `watkit init`
 initializes a new watkit project. in a specified directory (or the current one if none is specified), creates a new watkit.json file with the following structure:

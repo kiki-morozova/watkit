@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-watkit Windows Installer
-Installs watkit package manager for Windows systems
-"""
-
 import os
 import sys
 import subprocess
