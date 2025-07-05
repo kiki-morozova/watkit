@@ -7,6 +7,7 @@ from routes.publish import router as publish_router
 from routes.auth import router as auth_router
 from routes.serve import router as serve_router
 from routes.search import router as search_router
+from routes.config import router as config_router
 
 app = FastAPI()
 
@@ -18,6 +19,7 @@ app.include_router(publish_router, prefix="")
 app.include_router(auth_router, prefix="")
 app.include_router(serve_router, prefix="")
 app.include_router(search_router, prefix="")
+app.include_router(config_router, prefix="")
 
 # Serve the main page at root
 @app.get("/")

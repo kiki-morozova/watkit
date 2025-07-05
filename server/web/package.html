@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">watkit - Package</title>
+    <link rel="icon" type="image/png" href="/web/assets/watkitlogo32x32.png">
+    <link rel="stylesheet" href="/web/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="/" class="nav-brand">
+                    <img src="/web/assets/watkitlogolineart.png" alt="watkit" class="nav-logo">
+                    <span>watkit</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="https://github.com/kiki-morozova/watkit" class="nav-link">ᯤ source ᯤ</a>
+                <a href="#" id="randomPackageLink" class="nav-link">⚁ random ⚄</a>
+                <a href="/auth/login" class="nav-link login-btn">⚷ login ⚷</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div id="packageHeader" class="package-header">
+                <div class="package-info">
+                    <h1 id="packageName" class="package-name">Loading...</h1>
+                    <div class="package-meta">
+                        <span id="packageAuthor" class="package-author">by Loading...</span>
+                        <span id="packageVersion" class="package-version">vLoading...</span>
+                        <span id="packageDownloads" class="package-downloads">Loading downloads...</span>
+                    </div>
+                </div>
+                <div class="package-actions">
+                    <button id="installBtn" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        install
+                    </button>
+                </div>
+            </div>
+
+            <div id="packageContent" class="package-content">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading package details...</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p> made by @kiki.morozova with &lt;3 for the webassembly community</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/web/package.js"></script>
+</body>
+</html> 

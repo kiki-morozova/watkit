@@ -28,11 +28,17 @@ async def publish_package(
     version: str = Form(...),
     watpkg_file: UploadFile = File(...)
 ):
+    if len(name) > 30:
+        raise HTTPException(status_code=400, detail="Package name must be less than 30 characters")
+
     if not re.match(r'^[a-zA-Z0-9_-]+$', name):
         raise HTTPException(status_code=400, detail="Package name can only contain alphanumeric characters, hyphens, and underscores")
     
-    if not re.match(r'^[a-zA-Z0-9_-]+$', version):
-        raise HTTPException(status_code=400, detail="Version can only contain alphanumeric characters, hyphens, and underscores")
+    if len(version) > 20:
+        raise HTTPException(status_code=400, detail="Version must be less than 20 characters") 
+
+    if not re.match(r'^[a-zA-Z0-9.]+$', version):
+        raise HTTPException(status_code=400, detail="Version can only contain alphanumeric characters and dots")
 
     if not watpkg_file.filename.endswith(".watpkg"):
         raise HTTPException(status_code=400, detail="Only .watpkg files are allowed")

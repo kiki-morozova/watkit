@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 import os
-import json
 import threading
 from helpers.s3 import increment_package_download_count, get_package_download_count, s3_list_objects, s3_read_text, s3_write_text, s3_exists
+from dotenv import load_dotenv
 
-REGISTRY_DIR = "registry"
 router = APIRouter()
 
 # Global download counter with thread safety and S3 persistence
 TOTAL_DOWNLOADS_COUNTER = 0
 download_lock = threading.Lock()
+load_dotenv()
+BUCKET = os.getenv("S3_BUCKET_NAME")
 
 def load_total_downloads():
     """Load total downloads count from S3"""
@@ -46,21 +47,22 @@ load_total_downloads()
 
 @router.get("/package/{name}/{version}/manifest")
 async def get_manifest(name: str, version: str):
-    path = os.path.join(REGISTRY_DIR, name, version, "watkit.json")
-    if not os.path.exists(path):
-        raise HTTPException(status_code=404, detail="Manifest not found")
     try:
-        with open(path) as f:
-            data = json.load(f)
+        s3_url = f"http://{BUCKET}.s3-website-us-east-1.amazonaws.com/{name}/{version}/watkit.json"
+        import requests
+        response = requests.get(s3_url)
+        if response.status_code != 200:
+            raise HTTPException(status_code=404, detail="Manifest not found")
+        data = response.json()
         return JSONResponse(data)
-    except Exception:
+    except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to read manifest")
 
 
 @router.get("/package/{name}/{version}/archive")
 async def get_archive(name: str, version: str):
     archive_name = f"{name}.watpkg"
-    archive_path = os.path.join(REGISTRY_DIR, name, version, archive_name)
+    archive_path = os.path.join(BUCKET, name, version, archive_name)
     if not os.path.exists(archive_path):
         raise HTTPException(status_code=404, detail="Package archive not found")
     

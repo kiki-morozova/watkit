@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>watkit - WebAssembly Package Registry</title>
+    <link rel="icon" type="image/png" href="/web/assets/watkitlogo32x32.png">
+    <link rel="stylesheet" href="/web/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">
+                <img src="/web/assets/watkitlogolineart.png" alt="watkit" class="nav-logo">
+                <span>watkit</span>
+            </a>
+            <div class="nav-links">
+                <a href="https://github.com/kiki-morozova/watkit" class="nav-link">ᯤ source ᯤ</a>
+                <a href="#" id="randomBtn" class="nav-link">⚁ random ⚄</a>
+                <a href="/auth/login" class="nav-link login-btn">⚷ login ⚷</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        the package registry for 
+                        <span class="highlight">webassembly text</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        discover, share, and use handwritten wat modules. build faster for the web.
+                    </p>
+                    
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input 
+                                type="text" 
+                                id="searchInput" 
+                                placeholder="search packages..."
+                                class="search-input"
+                            >
+                            <button id="searchBtn" class="search-btn">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="packageCount">0</span>
+                            <span class="stat-label">packages</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="downloadCount">0</span>
+                            <span class="stat-label">downloads</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div id="codePreview" class="code-preview">
+                        <div class="code-header">
+                            <span class="code-title">example.wat</span>
+                        </div>
+                        <pre class="code-content"><code>(module
+  (func $add (param $a i32) (param $b i32) (result i32)
+    local.get $a
+    local.get $b
+    i32.add)
+  (export "add" (func $add)))</code></pre>
+                    </div>
+                    <div id="searchResults" class="search-results" style="display: none;">
+                        <div class="code-header">
+                            <span class="code-title">search results</span>
+                        </div>
+                        <div id="packagesGrid" class="packages-grid">
+                        </div>
+                        <div id="loadingPackages" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>loading packages...</span>
+                        </div>
+                        <div id="noPackages" class="no-packages" style="display: none;">
+                            <i class="fas fa-search"></i>
+                            <h3>no packages found</h3>
+                            <p>try adjusting your search terms.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about">
+            <div class="container">
+                <h2 class="section-title">why watkit?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3>learn low-level </h3>
+                        <p>published wat = hackable webassembly. decompiled wasm binaries are hard for experienced devs to use, let alone for beginners learn from. import from a readable registry instead!</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3>optimize performance</h3>
+                        <p>more people writing wat by hand means more optimized wasm code and a faster web for everyone.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <h3>build a community</h3>
+                        <p>share and reuse "standard" code in a fully modular ecosystem with versioned, recursive dependency support. focus on innovation, not rewriting common patterns.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>ready to jump in?</h2>
+                <p>tap into watkit and start building for a faster web.</p>
+                <div class="cta-buttons">
+                    <a href="/auth/login" class="btn btn-primary">
+                        <i class="fas fa-upload"></i>
+                        install watkit (unix)
+                    </a>
+                    <a href="https://github.com/kiki-morozova/watkit" class="btn btn-secondary">
+                        <i class="fas fa-code"></i>
+                        view source
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p> made by @kiki.morozova with &lt;3 for the webassembly community</p>
+        </div>
+    </footer>
+
+    <script src="/web/script.js?v=2"></script>
+</body>
+</html> 
