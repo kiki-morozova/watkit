@@ -24,7 +24,7 @@ platform
 from pathlib import Path
 ```
 for windows, you'll also need winreg.  
-then, clone this repo and run (from the watkit root directory, with the files made executable): 
+then, download the install file for your OS from this repo and run it as: 
 ```bash 
 # for unix
 python3 main.py
@@ -35,6 +35,8 @@ python3 main.py
 python3 main_windows.py
 ```
 follow the install instructions, and choose the cli-only install for quickstart. serverside code is provided in this repo to make this project open-source and build trust with the community, but is not needed for most use cases.
+
+> **Note:** you do not need to clone the repo beforehand. the install file will do that for you.
 
 ## commands overview
 ### `watkit init`
