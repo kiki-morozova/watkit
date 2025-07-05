@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from routes.publish import router as publish_router
 from routes.auth import router as auth_router
@@ -8,11 +10,24 @@ from routes.search import router as search_router
 
 app = FastAPI()
 
+# Mount static files
+app.mount("/web", StaticFiles(directory="web"), name="web")
+
 # Register routes
 app.include_router(publish_router, prefix="")
 app.include_router(auth_router, prefix="")
 app.include_router(serve_router, prefix="")
 app.include_router(search_router, prefix="")
+
+# Serve the main page at root
+@app.get("/")
+async def read_index():
+    return FileResponse("web/index.html")
+
+# Serve the package page
+@app.get("/package")
+async def read_package():
+    return FileResponse("web/package.html")
 
 def custom_openapi():
     if app.openapi_schema:
