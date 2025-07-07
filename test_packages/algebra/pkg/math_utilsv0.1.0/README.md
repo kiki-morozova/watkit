@@ -1,6 +1,6 @@
 # math_utils
 includes simple math functions for wasm, that are especially useful for low-level development, but aren't built into WAT.  
->**note:** this package will be updated with more useful functions as they are needed (feel free to send recommendations to the author!).
+>**n ote:** this package will be updated with more useful functions as they are needed (feel free to send recommendations to the author!).
 
 ## functions
 
