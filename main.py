@@ -71,36 +71,62 @@ def clone_repository(install_dir):
     run_command(f"git clone https://github.com/kiki-morozova/watkit.git {install_dir}")
     print("✓ repository cloned successfully")
 
-def install_python_dependencies(install_dir, cli_only=True):
-    """Install Python dependencies"""
-    print("installing python dependencies...")
-    
+def install_python_dependencies(cli_only: bool = True):
+    """Install Python dependencies using apt where possible (Ubuntu/Debian)."""
+    print("installing python dependencies (via apt)...")
+
+    # Define dependency sets
     if cli_only:
         print("  installing CLI-only dependencies...")
         dependencies = [
-            "colorama",      # For colored terminal output
-            "requests",      # For HTTP requests
-            "httpx",         # For async HTTP requests
+            "colorama",
+            "requests",
+            "httpx",
         ]
     else:
         print("  installing all dependencies (including server)...")
         dependencies = [
-            "colorama",      # For colored terminal output
-            "requests",      # For HTTP requests
-            "httpx",         # For async HTTP requests
-            "fastapi",       # For the web server
-            "boto3",         # For AWS S3 integration
-            "python-dotenv", # For environment variables
-            "python-jose[cryptography]", # For JWT handling
-            "uvicorn[standard]", # For running FastAPI server
+            "colorama",
+            "requests",
+            "httpx",
+            "fastapi",
+            "boto3",
+            "python-dotenv",
+            "python-jose[cryptography]",
+            "uvicorn[standard]",
         ]
-    
-    # Install each dependency
+
+    # Map PyPI names to apt package names
+    apt_map = {
+        "colorama": "python3-colorama",
+        "requests": "python3-requests",
+        "httpx": "python3-httpx",
+        "fastapi": "python3-fastapi",
+        "boto3": "python3-boto3",
+        "python-dotenv": "python3-dotenv",
+        "python-jose[cryptography]": "python3-jose",
+        "uvicorn[standard]": "python3-uvicorn",
+    }
+
+    # Check if apt is available
+    if not shutil.which("apt-get"):
+        print("⛌ apt-get not found on this system. Please install dependencies manually or use a virtual environment.")
+        sys.exit(1)
+
+    # Update package index once
+    print("  updating apt package index (sudo)…")
+    run_command("sudo apt-get update -y")
+
+    # Install each dependency via apt
     for dep in dependencies:
-        print(f"  installing {dep}...")
-        run_command(f"pip3 install {dep}")
-    
-    print("✓ python dependencies installed")
+        apt_pkg = apt_map.get(dep)
+        if not apt_pkg:
+            print(f"ⓘ no apt mapping for {dep}. You may need to install it manually.")
+            continue
+        print(f"  installing {apt_pkg}…")
+        run_command(f"sudo apt-get install -y {apt_pkg}")
+
+    print("✓ python dependencies installed via apt")
 
 def cleanup_unnecessary_directories(install_dir):
     """Remove server and test_packages directories if CLI-only installation"""
@@ -149,45 +175,49 @@ if __name__ == "__main__":
     print("✓ watkit executable created")
 
 def setup_path():
-    """Add watkit to PATH"""
+    """Add watkit to user PATH in a robust way"""
     print("setting up PATH...")
-    
+
     install_dir = get_install_directory()
-    watkit_path = install_dir / "watkit"
-    
-    # Determine shell configuration file
+
+    # Prepare the line that should end up in the shell startup file(s)
+    export_line = f'\n# watkit package manager\nexport PATH="{install_dir}:$PATH"\n'
+
     shell = os.environ.get('SHELL', '')
     home = Path.home()
-    
+
+    # Decide which startup files we need to touch depending on the shell.
+    # We write to ALL of them that are relevant for the user so that the PATH
+    # works in both login and non-login shells.
     if 'zsh' in shell:
-        config_file = home / '.zshrc'
+        candidate_files = ['.zprofile', '.zshrc']
     elif 'bash' in shell:
-        config_file = home / '.bashrc'
+        candidate_files = ['.bash_profile', '.profile', '.bashrc']
     else:
-        # Try common shell config files
-        for config_name in ['.zshrc', '.bashrc', '.bash_profile', '.profile']:
-            config_file = home / config_name
-            if config_file.exists():
-                break
-        else:
-            config_file = home / '.profile'
-    
-    # Create the export line
-    export_line = f'\n# watkit package manager\nexport PATH="{install_dir}:$PATH"\n'
-    
-    # Check if already in PATH
-    with open(config_file, 'r') as f:
-        content = f.read()
-    
-    if install_dir.as_posix() not in content:
-        # Append to config file
-        with open(config_file, 'a') as f:
-            f.write(export_line)
-        print(f"✓ added watkit to {config_file}")
-    else:
-        print(f"✓ watkit already in {config_file}")
-    
-    # Also add to current session
+        # Fallback for other POSIX shells
+        candidate_files = ['.profile']
+
+    added_any = False
+    for filename in candidate_files:
+        config_file = home / filename
+
+        # Ensure the file exists; open in append+read mode to create if missing
+        config_file.touch(exist_ok=True)
+
+        with open(config_file, 'r+') as f:
+            content = f.read()
+            if install_dir.as_posix() not in content:
+                # Not yet present – append
+                f.write(export_line)
+                added_any = True
+                print(f"✓ added watkit to {config_file}")
+            else:
+                print(f"✓ watkit already in {config_file}")
+
+    if not added_any:
+        print("ⓘ PATH entry already present in all checked files")
+
+    # Also add to *this* process so subsequent commands in the installer can find it
     os.environ['PATH'] = f"{install_dir}:{os.environ.get('PATH', '')}"
     print("✓ added watkit to current session PATH")
 
@@ -245,7 +275,7 @@ def main():
     clone_repository(install_dir)
     
     # Install Python dependencies
-    install_python_dependencies(install_dir, cli_only=cli_only)
+    install_python_dependencies(cli_only=cli_only)
     
     # Clean up unnecessary directories if CLI-only
     if cli_only:
