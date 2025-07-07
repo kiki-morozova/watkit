@@ -6,7 +6,7 @@ from colorama import init as colorama_init, Fore, Style
 
 colorama_init(autoreset=True)
 
-CONFIG_PATH = os.path.expanduser("~/watkit/config.json")
+CONFIG_PATH = os.path.expanduser("~/.watkit/config.json")
 COOKIE_PATH = os.path.expanduser("~/.watkit/cookies.json")
 GITHUB_DEVICE_CODE_URL = "https://github.com/login/device/code"
 GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
