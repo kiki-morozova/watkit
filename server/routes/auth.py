@@ -13,7 +13,7 @@ import os
 import httpx
 
 router = APIRouter()
-GITHUB_REDIRECT_URI = os.getenv("REDIRECT_URI", "https://watkit.dev/auth/callback")
+GITHUB_REDIRECT_URI = os.getenv("REDIRECT_URI", "https://watkit-7omq2a.fly.dev/auth/callback")
 
 @router.get("/auth/login")
 async def login(state: str = ""):
@@ -33,7 +33,7 @@ async def callback(code: str, state: str):
     jwt_token = create_jwt(username)
 
     decoded_state = unquote(state)
-    if decoded_state.startswith("https://watkit.dev"):
+    if decoded_state.startswith("https://watkit-7omq2a.fly.dev"):
         # CLI login
         redirect_url = f"{decoded_state}?token={jwt_token}"
         return RedirectResponse(redirect_url)

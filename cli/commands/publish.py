@@ -7,7 +7,7 @@ from command_constants import ALLOWED_TOP_LEVEL, ALLOWED_SRC_EXT
 
 CONFIG_PATH = os.path.expanduser("~/.watkit/config.json")
 COOKIE_PATH = os.path.expanduser("~/.watkit/cookies.json")
-SERVER_URL = "https://watkit.dev"
+SERVER_URL = "https://watkit-7omq2a.fly.dev"
 
 
 def validate_project() -> dict | None:

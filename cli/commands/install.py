@@ -199,7 +199,7 @@ def run(name_with_version: str, seen=None) -> None:
         # track successful download for *website metrics ooo shiny*
         try:
             # use watkit server for tracking (since CLI downloads from S3)
-            track_url = "https://watkit.dev/track-download"
+            track_url = "https://watkit-7omq2a.fly.dev/track-download"
             requests.post(track_url, params={"name": name, "version": version})
         except Exception as e:
             print(f"{Fore.YELLOW}Warning: Could not track download: {e}{Style.RESET_ALL}")
