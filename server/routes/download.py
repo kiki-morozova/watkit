@@ -20,7 +20,7 @@ async def download_file(filename: str):
         raise HTTPException(status_code=500, detail="S3 bucket not configured")
     
     # Construct S3 website URL
-    s3_url = f"http://{bucket_name}.s3-website-us-east-1.amazonaws.com/{filename}"
+    s3_url = f"https://{bucket_name}.s3-website-us-east-1.amazonaws.com/{filename}"
     
     try:
         async with httpx.AsyncClient() as client:

@@ -76,7 +76,7 @@ async function loadPackageManifest(packageName, version, versions) {
             throw new Error('S3 bucket name not configured');
         }
         
-        const s3Url = `http://${BUCKET}.s3-website-us-east-1.amazonaws.com/${packageName}/${version}/watkit.json`;
+        const s3Url = `https://${BUCKET}.s3-website-us-east-1.amazonaws.com/${packageName}/${version}/watkit.json`;
         const response = await fetch(s3Url);
         
         if (!response.ok) {

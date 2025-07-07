@@ -50,7 +50,7 @@ async def get_manifest(name: str, version: str):
     validate_version(version)
     
     try:
-        s3_url = f"http://{BUCKET}.s3-website-us-east-1.amazonaws.com/{name}/{version}/watkit.json"
+        s3_url = f"https://{BUCKET}.s3-website-us-east-1.amazonaws.com/{name}/{version}/watkit.json"
         import requests
         response = requests.get(s3_url)
         if response.status_code != 200:
