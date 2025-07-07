@@ -1,5 +1,6 @@
 # watkit
 a package registry for handwritten WAT modules with recursive dependency resolution, semantic versioning, and automatic runner generation (JS + rust). 
+cli first, pretty website second <3
 
 ## why?
 ∵ WAT is a very cool low level language, and the first of its kind with such a low barrier to entry (runs in browser!).  
