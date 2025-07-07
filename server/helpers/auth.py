@@ -12,7 +12,7 @@ GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 JWT_SECRET = os.getenv("JWT_SECRET", "change-this-secret")
 JWT_ALGORITHM = "HS256"
 
-REDIRECT_URI = os.getenv("REDIRECT_URI", "http://localhost:8000/auth/callback") # later make watkit.dev/auth/callback
+REDIRECT_URI = os.getenv("REDIRECT_URI", "http://watkit.dev/auth/callback") # later make watkit.dev/auth/callback
 
 def get_github_oauth_url(state: str = "") -> str:
     return (
