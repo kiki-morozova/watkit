@@ -50,14 +50,19 @@ async def get_manifest(name: str, version: str):
     validate_version(version)
     
     try:
-        s3_url = f"https://{BUCKET}.s3-website-us-east-1.amazonaws.com/{name}/{version}/watkit.json"
-        import requests
-        response = requests.get(s3_url)
-        if response.status_code != 200:
+        # Use S3 helper to read the manifest directly from S3
+        manifest_key = f"{name}/{version}/watkit.json"
+        if not s3_exists(manifest_key):
             raise HTTPException(status_code=404, detail="Manifest not found")
-        data = response.json()
+        
+        manifest_content = s3_read_text(manifest_key)
+        import json
+        data = json.loads(manifest_content)
         return JSONResponse(data)
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"Error reading manifest for {name}v{version}: {e}")
         raise HTTPException(status_code=500, detail="Failed to read manifest")
 
 

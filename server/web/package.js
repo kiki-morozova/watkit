@@ -64,20 +64,8 @@ function displayPackageInfo(packageToFetch) {
 // Load package manifest
 async function loadPackageManifest(packageName, version, versions) {
     try {
-        // Get S3 bucket name from server config
-        const configResponse = await fetch('/config');
-        if (!configResponse.ok) {
-            throw new Error('Failed to load server configuration');
-        }
-        const config = await configResponse.json();
-        const BUCKET = config.s3_bucket_name;
-        
-        if (!BUCKET) {
-            throw new Error('S3 bucket name not configured');
-        }
-        
-        const s3Url = `https://${BUCKET}.s3-website-us-east-1.amazonaws.com/${packageName}/${version}/watkit.json`;
-        const response = await fetch(s3Url);
+        // Use the API endpoint to get the manifest
+        const response = await fetch(`/package/${encodeURIComponent(packageName)}/${encodeURIComponent(version)}/manifest`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

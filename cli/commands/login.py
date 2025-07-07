@@ -74,7 +74,7 @@ def run():
             return
 
     # Step 3: Exchange for watkit token
-    server = config.get("server_url", "https://watkit-7omq2a.fly.dev")
+    server = config.get("server_url", "https://watkit.dev")
     exchange_resp = httpx.post(f"{server}/auth/exchange", json={
         "access_token": access_token
     })
