@@ -141,3 +141,13 @@ watkit search "alice" --author
 ```
 performs a fuzzy match (partial + approximate matches), and searches a pre-built index hosted by the watkit API (not on S3). 
 returns a list of packages, including: name, author, latest version and all available versions. 
+
+## .watkpkg spec
+watpkg is your standard tar.gz file, but they only allow markdown files (specifically, README.md), a watkit.json config file, and .wat files to be uploaded. watkit doesn't store binaries, including wasm binaries due to security concerns, and it securely unzips all watpkg files server side to validate them before putting them on the website. if you discover any issues with this validation from a security standpoint, please let the maintainers know and we'll fix it right away! 
+
+## faqs
+### how do you do a.wasm without storing the binaries?
+the install and compile commands handle all of that locally on your machine! you do need wat2wasm in order to get the .wat -> .wasm compilation effects of those commands working properly. also, it's important to note that watkit is WAT first, WASM second. if the code's not readable, it's not hackable or extendable.
+
+### how do you validate package names/authors? 
+authors are verified via github, watkit asks you to login in with device flow before running the publish command! when you run `watkit login`, watkit'll have you login through Github OAuth and then send you back a JWT from our api (don't worry, watkit handles the storage for you) and that's how you authenticate with our backend on future requests. all modules are linked to their owners by their github usernames, and transfer is possible via the api endpoint (although the cli `transfer` command will be implemented shortly). package names and versions are validated via standard anti-xss techniques (alphanumeric, dots, underscores, and dashes allowed) and length checks. the name "downloads" is reserved too, sorry :(.
