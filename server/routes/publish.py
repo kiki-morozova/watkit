@@ -20,7 +20,7 @@ from helpers.s3 import (
 )
 
 router = APIRouter()
-BUCKET = os.getenv("S3_BUCKET_NAME")
+BUCKET = os.environ["S3_BUCKET_NAME"]
 
 @router.post("/publish")
 async def publish_package(

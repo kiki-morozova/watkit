@@ -13,7 +13,7 @@ import os
 import httpx
 
 router = APIRouter()
-GITHUB_REDIRECT_URI = os.getenv("REDIRECT_URI", "https://watkit-7omq2a.fly.dev/auth/callback")
+GITHUB_REDIRECT_URI = os.environ["REDIRECT_URI"]
 
 @router.get("/auth/login")
 async def login(state: str = ""):

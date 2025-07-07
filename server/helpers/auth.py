@@ -1,18 +1,15 @@
 import os
 import httpx
 from jose import jwt, JWTError
-from dotenv import load_dotenv
 from fastapi import HTTPException, Request
 from datetime import datetime, timedelta
 
-load_dotenv()
-
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-JWT_SECRET = os.getenv("JWT_SECRET", "change-this-secret")
+GITHUB_CLIENT_ID = os.environ["GITHUB_CLIENT_ID"]
+GITHUB_CLIENT_SECRET = os.environ["GITHUB_CLIENT_SECRET"]
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = "HS256"
 
-REDIRECT_URI = os.getenv("REDIRECT_URI", "http://watkit-7omq2a.fly.dev/auth/callback")
+REDIRECT_URI = os.environ["REDIRECT_URI"]
 
 def get_github_oauth_url(state: str = "") -> str:
     return (

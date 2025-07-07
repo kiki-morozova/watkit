@@ -2,9 +2,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 import httpx
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 router = APIRouter()
 
@@ -18,7 +15,7 @@ async def download_file(filename: str):
         raise HTTPException(status_code=400, detail="Invalid filename")
     
     # Get S3 bucket name from environment
-    bucket_name = os.getenv("S3_BUCKET_NAME")
+    bucket_name = os.environ["S3_BUCKET_NAME"]
     if not bucket_name:
         raise HTTPException(status_code=500, detail="S3 bucket not configured")
     

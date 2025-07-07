@@ -9,7 +9,7 @@ from helpers.validation import validate_alphanumeric_hyphen_underscore
 
 router = APIRouter()
 
-BUCKET = os.environ.get("S3_BUCKET_NAME")
+BUCKET = os.environ["S3_BUCKET_NAME"]
 INDEX_KEY = "search_index.json"
 
 s3 = boto3.client("s3")

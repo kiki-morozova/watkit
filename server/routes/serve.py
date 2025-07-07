@@ -4,15 +4,13 @@ import os
 import threading
 from helpers.s3 import increment_package_download_count, get_package_download_count, s3_list_objects, s3_read_text, s3_write_text, s3_exists
 from helpers.validation import validate_package_name, validate_version
-from dotenv import load_dotenv
 
 router = APIRouter()
 
 # Global download counter with thread safety and S3 persistence
 TOTAL_DOWNLOADS_COUNTER = 0
 download_lock = threading.Lock()
-load_dotenv()
-BUCKET = os.getenv("S3_BUCKET_NAME")
+BUCKET = os.environ["S3_BUCKET_NAME"]
 
 def load_total_downloads():
     """Load total downloads count from S3"""
