@@ -9,7 +9,7 @@ from command_constants import PKG_DIR
 from commands.run_func_utils.import_handler_helpers import compile_wat
 from commands.run_func_utils.validation_helpers import safe_extract_tar
 
-CONFIG_PATH = os.path.expanduser("~/watkit/config.json")
+CONFIG_PATH = os.path.expanduser("~/.watkit/config.json")
 
 def load_config():
     try:
