@@ -2,7 +2,7 @@
 import os, json, requests, argparse, re
 from colorama import init as colorama_init, Fore, Style
 
-CONFIG_PATH = os.path.expanduser("~/watkit/config.json")
+CONFIG_PATH = os.path.expanduser("~/.watkit/config.json")
 from command_constants import SEARCH_API_URL
 
 def validate_query(query: str) -> None:
