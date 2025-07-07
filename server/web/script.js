@@ -15,11 +15,10 @@ const searchResults = document.getElementById('searchResults');
 // Load packages on page load
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
-    // Show code preview by default
     showCodePreview();
-    // Load download count
     loadDownloadCount();
-    // Update download button based on OS
+    loadPackagesCount();
+    loadAuthorsCount();
     updateDownloadButtonForOS();
 });
 
@@ -166,6 +165,34 @@ async function loadDownloadCount() {
         }
     } catch (error) {
         console.error('Error loading download count:', error);
+        // Keep the default value if we can't load it
+    }
+}
+
+// Load packages count
+async function loadPackagesCount() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/packages`);
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('packagesCount').textContent = data.total_packages;
+        }
+    } catch (error) {
+        console.error('Error loading packages count:', error);
+        // Keep the default value if we can't load it
+    }
+}
+
+// Load authors count
+async function loadAuthorsCount() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/authors`);
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('authorsCount').textContent = data.total_authors;
+        }
+    } catch (error) {
+        console.error('Error loading authors count:', error);
         // Keep the default value if we can't load it
     }
 }

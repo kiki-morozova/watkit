@@ -102,6 +102,40 @@ async def get_download_count():
     """
     return JSONResponse({"total_downloads": get_download_counter()})
 
+@router.get("/authors")
+async def get_authors_count():
+    """
+    Get the number of authors by counting lines in AUTHORS.txt
+    """
+    try:
+        if s3_exists("AUTHORS.txt"):
+            authors_text = s3_read_text("AUTHORS.txt")
+            # Count non-empty lines
+            lines = [line.strip() for line in authors_text.split('\n') if line.strip()]
+            return JSONResponse({"total_authors": len(lines)})
+        else:
+            return JSONResponse({"total_authors": 0})
+    except Exception as e:
+        print(f"Error reading AUTHORS.txt: {e}")
+        return JSONResponse({"total_authors": 0})
+
+@router.get("/packages")
+async def get_packages_count():
+    """
+    Get the number of packages by counting entries in search_index.json
+    """
+    try:
+        if s3_exists("search_index.json"):
+            import json
+            index_text = s3_read_text("search_index.json")
+            index_data = json.loads(index_text)
+            return JSONResponse({"total_packages": len(index_data)})
+        else:
+            return JSONResponse({"total_packages": 0})
+    except Exception as e:
+        print(f"Error reading search_index.json: {e}")
+        return JSONResponse({"total_packages": 0})
+
 @router.get("/package/{name}/{version}/downloads")
 async def get_package_download_count_endpoint(name: str, version: str):
     """
