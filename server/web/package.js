@@ -251,6 +251,7 @@ function escapeHtml(text) {
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     loadPackageDetails();
+    updateDownloadButtonForOS();
 }); 
 
 
@@ -269,5 +270,25 @@ function setupEventListeners() {
     const installBtn = document.getElementById('installBtn');
     if (installBtn) {
         installBtn.addEventListener('click', installPackage);
+    }
+}
+
+// Update download button based on OS
+function updateDownloadButtonForOS() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let downloadUrl;
+    if (userAgent.includes('windows')) {
+        downloadUrl = 'http://watkit-registry.s3-website-us-east-1.amazonaws.com/main_windows.py';
+    } else {
+        downloadUrl = 'http://watkit-registry.s3-website-us-east-1.amazonaws.com/main.py';
+    }
+    // Update both the main and nav install buttons
+    const downloadBtn = document.querySelector('.btn-primary');
+    if (downloadBtn) {
+        downloadBtn.href = downloadUrl;
+    }
+    const navInstallBtn = document.getElementById('navInstallBtn');
+    if (navInstallBtn) {
+        navInstallBtn.href = downloadUrl;
     }
 }
