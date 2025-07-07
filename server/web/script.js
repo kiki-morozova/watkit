@@ -1,9 +1,6 @@
 // API base URL - since we're serving from the same server
 const API_BASE_URL = '';
 
-// S3 bucket URL for downloads
-const S3_BUCKET_URL = 'http://watkit-registry.s3-website-us-east-1.amazonaws.com';
-
 // DOM elements
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
@@ -30,22 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateDownloadButtonForOS() {
     const userAgent = navigator.userAgent.toLowerCase();
     console.log(`userAgent: ${userAgent}`);
-    let downloadUrl;
+    let filename;
     
     if (userAgent.includes('windows')) {
-        downloadUrl = `${S3_BUCKET_URL}/main_windows.py`;
+        filename = 'main_windows.py';
     } else {
         // For macOS, Linux, and other non-Windows systems
-        downloadUrl = `${S3_BUCKET_URL}/main.py`;
+        filename = 'main.py';
     }
     
     // Update both the main and nav install buttons
     const downloadBtn = document.querySelector('.btn-primary');
     if (downloadBtn) {
-        downloadBtn.href = downloadUrl;
+        downloadBtn.href = `/download/${filename}`;
     }
     if (navInstallBtn) {
-        navInstallBtn.href = downloadUrl;
+        navInstallBtn.href = `/download/${filename}`;
     }
 }
 

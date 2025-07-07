@@ -276,19 +276,19 @@ function setupEventListeners() {
 // Update download button based on OS
 function updateDownloadButtonForOS() {
     const userAgent = navigator.userAgent.toLowerCase();
-    let downloadUrl;
+    let filename;
     if (userAgent.includes('windows')) {
-        downloadUrl = 'http://watkit-registry.s3-website-us-east-1.amazonaws.com/main_windows.py';
+        filename = 'main_windows.py';
     } else {
-        downloadUrl = 'http://watkit-registry.s3-website-us-east-1.amazonaws.com/main.py';
+        filename = 'main.py';
     }
     // Update both the main and nav install buttons
     const downloadBtn = document.querySelector('.btn-primary');
     if (downloadBtn) {
-        downloadBtn.href = downloadUrl;
+        downloadBtn.href = `/download/${filename}`;
     }
     const navInstallBtn = document.getElementById('navInstallBtn');
     if (navInstallBtn) {
-        navInstallBtn.href = downloadUrl;
+        navInstallBtn.href = `/download/${filename}`;
     }
 }
