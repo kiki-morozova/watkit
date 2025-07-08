@@ -5,7 +5,7 @@ import requests
 import re
 from colorama import init as colorama_init, Fore, Style
 
-from command_constants import PKG_DIR
+from command_constants import PKG_DIR, SERVER_URL
 from commands.run_func_utils.import_handler_helpers import compile_wat
 from commands.run_func_utils.validation_helpers import safe_extract_tar
 
@@ -28,6 +28,7 @@ def fetch_from_registry(url: str, stream=False) -> requests.Response:
     Returns:
         requests.Response - response from the registry
     """
+    print("url", url)
     resp = requests.get(url, stream=stream)
     if resp.status_code != 200:
         raise Exception(f"Failed to fetch: {url} → {resp.status_code}")
@@ -112,6 +113,12 @@ def run(name_with_version: str, seen=None) -> None:
         print(f"{Fore.RED}✘ Missing 'registry_url' in config.{Style.RESET_ALL}")
         return
 
+    # Convert S3 static website URL to S3 REST API URL
+    if "s3-website" in base_url:
+        # Convert from: https://watkit-registry.s3-website-us-east-1.amazonaws.com
+        # To: https://watkit-registry.s3.us-east-1.amazonaws.com
+        base_url = base_url.replace("s3-website-", "s3.")
+
     # Parse name and optional version
     if "v" in name_with_version:
         name, version = name_with_version.split("v", 1)
@@ -136,7 +143,7 @@ def run(name_with_version: str, seen=None) -> None:
             latest_resp = fetch_from_registry(latest_url)
             version = latest_resp.text.strip()
             print(f"{Fore.YELLOW}➜ Resolved {name}vlatest to {version}{Style.RESET_ALL}")
-
+   
         archive_filename = f"{name}-{version}.watpkg"
         manifest_url = f"{base_url}/{name}/{version}/watkit.json"
         archive_url = f"{base_url}/{name}/{version}/{archive_filename}"
@@ -199,7 +206,7 @@ def run(name_with_version: str, seen=None) -> None:
         # track successful download for *website metrics ooo shiny*
         try:
             # use watkit server for tracking (since CLI downloads from S3)
-            track_url = "https://watkit-7omq2a.fly.dev/track-download"
+            track_url = f"{SERVER_URL}/track-download"
             requests.post(track_url, params={"name": name, "version": version})
         except Exception as e:
             print(f"{Fore.YELLOW}Warning: Could not track download: {e}{Style.RESET_ALL}")

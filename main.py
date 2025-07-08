@@ -72,8 +72,8 @@ def clone_repository(install_dir):
     print("✓ repository cloned successfully")
 
 def install_python_dependencies(cli_only: bool = True):
-    """Install Python dependencies using apt where possible (Ubuntu/Debian)."""
-    print("installing python dependencies (via apt)...")
+    """Install Python dependencies based on the detected OS and package manager."""
+    print("installing python dependencies...")
 
     # Define dependency sets
     if cli_only:
@@ -96,6 +96,49 @@ def install_python_dependencies(cli_only: bool = True):
             "uvicorn[standard]",
         ]
 
+    # Detect OS and package manager
+    system = platform.system()
+    
+    if system == "Darwin":  # macOS
+        print("  detected macOS - using pip to install dependencies...")
+        install_with_pip(dependencies)
+    elif system == "Linux":
+        # Check for apt-based package manager
+        if shutil.which("apt-get"):
+            print("  detected apt-based Linux - using apt to install dependencies...")
+            install_with_apt(dependencies)
+        else:
+            print("⛌ this is an unsupported Linux system.")
+            print("You will need to install the relevant Python packages yourself, and then add watkit.py under the cli dir to PATH to make watkit work for you.")
+            print("\nRequired packages:")
+            for dep in dependencies:
+                print(f"  - {dep}")
+            sys.exit(1)
+    else:
+        print(f"⛌ unsupported system: {system}")
+        sys.exit(1)
+
+def install_with_pip(dependencies):
+    """Install dependencies using pip"""
+    print("  installing dependencies via pip...")
+    
+    # Check if pip is available
+    pip_cmd = "pip3" if shutil.which("pip3") else "pip"
+    if not shutil.which(pip_cmd):
+        print(f"⛌ {pip_cmd} not found. Please install pip first.")
+        sys.exit(1)
+    
+    # Install each dependency
+    for dep in dependencies:
+        print(f"  installing {dep}...")
+        run_command(f"{pip_cmd} install {dep}")
+    
+    print("✓ python dependencies installed via pip")
+
+def install_with_apt(dependencies):
+    """Install dependencies using apt (Ubuntu/Debian)"""
+    print("  installing dependencies via apt...")
+    
     # Map PyPI names to apt package names
     apt_map = {
         "colorama": "python3-colorama",
@@ -107,11 +150,6 @@ def install_python_dependencies(cli_only: bool = True):
         "python-jose[cryptography]": "python3-jose",
         "uvicorn[standard]": "python3-uvicorn",
     }
-
-    # Check if apt is available
-    if not shutil.which("apt-get"):
-        print("⛌ apt-get not found on this system. Please install dependencies manually or use a virtual environment.")
-        sys.exit(1)
 
     # Update package index once
     print("  updating apt package index (sudo)…")
@@ -281,13 +319,8 @@ def main():
     if cli_only:
         cleanup_unnecessary_directories(install_dir)
     
-    # Create watkit executable
     create_watkit_script(install_dir)
-    
-    # Setup PATH
     setup_path()
-    
-    # Verify installation
     verify_installation()
 
 if __name__ == "__main__":

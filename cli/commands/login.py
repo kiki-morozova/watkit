@@ -3,14 +3,12 @@ import time
 import json
 import httpx
 from colorama import init as colorama_init, Fore, Style
-
+from cli.command_constants import GITHUB_DEVICE_CODE_URL, GITHUB_TOKEN_URL
 colorama_init(autoreset=True)
 
 CONFIG_PATH = os.path.expanduser("~/.watkit/config.json")
 COOKIE_PATH = os.path.expanduser("~/.watkit/cookies.json")
-GITHUB_DEVICE_CODE_URL = "https://github.com/login/device/code"
-GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token"
-GITHUB_USER_API = "https://api.github.com/user"
+
 
 def load_config():
     try:
