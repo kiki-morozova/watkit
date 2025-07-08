@@ -160,9 +160,6 @@ import os
 cli_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cli')
 sys.path.insert(0, cli_dir)
 
-# Change to the cli directory
-os.chdir(cli_dir)
-
 # Import and run the main function
 from watkit import main
 
